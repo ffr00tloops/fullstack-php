@@ -25,6 +25,73 @@ session_start();
       logout();
     }
 
+    
+
+    function changepass() {
+      $current_pass = $_POST['currentpass'];
+      $new_pass = $_POST['newpass'];
+      $confirm = $_POST['confirm'];
+
+      if ($new_pass == $confirm) {
+
+        $user = $_SESSION['username'];
+
+        $servername = "localhost";
+        $dbusername = "root";
+        $dbpassword = "";
+        $dbname = "registrationdb";
+        
+        $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
+   
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+        echo "<script>alert('Connection Success')</script";
+   
+        $sql = "SELECT * FROM users WHERE username = '$user' and password = '$current_pass'";
+        $res = mysqli_query($conn,$sql);
+        $result = mysqli_fetch_array($res, MYSQLI_NUM);
+   
+
+        if($result) {
+
+          if ($current_pass == $result[6]) {
+
+              $sql = "UPDATE users SET password = '$new_pass' WHERE username = '$user'";
+
+              if ($conn->query($sql) === TRUE) {
+                echo "<script>alert('Password modifed')</script";
+              } else {
+                  echo "Error: " . $sql . "<br>" . $conn->error;
+              }
+
+              mysqli_close($conn);
+          }
+
+        }
+        else {
+          echo "<script>alert('Wrong Password')</script";
+
+          header("Location:Login.php");  
+
+
+          mysqli_close($conn);
+        }
+
+
+      } else {
+        echo "<script>alert('Password not the same with confirm password')</script>";
+      }
+
+    }
+
+    if(isset($_POST['changepass'])) {
+      changepass();
+    }
+
+
+
+
     ?>
 
     <form method="post">
